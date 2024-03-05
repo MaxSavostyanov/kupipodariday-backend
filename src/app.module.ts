@@ -15,7 +15,7 @@ import { OffersModule } from './offers/offers.module';
       username: 'student',
       password: 'student',
       database: 'kupipodariday',
-      entities: [],
+      entities: ['dist/*/entities/*.entity.js'],
       synchronize: true,
     }),
     UsersModule,
