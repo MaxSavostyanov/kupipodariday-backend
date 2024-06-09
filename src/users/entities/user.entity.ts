@@ -25,7 +25,7 @@ export class User {
   @IsNotEmpty()
   @IsString()
   @Length(2, 30)
-  usermame: string;
+  username: string;
 
   //Информация о пользователе
   @Column({
