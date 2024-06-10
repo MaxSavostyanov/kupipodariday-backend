@@ -13,10 +13,19 @@ import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
 
 @Entity()
 export class User {
+  // Уникальный числовой идентификатор
   @PrimaryGeneratedColumn()
   id: number;
 
-  //Имя пользователя
+  // Дата создания
+  @CreateDateColumn()
+  createdAt: Date;
+
+  // Дата изменения
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  // Имя пользователя
   @Column({
     type: 'varchar',
     length: 30,
@@ -27,7 +36,7 @@ export class User {
   @Length(2, 30)
   username: string;
 
-  //Информация о пользователе
+  // Информация о пользователе
   @Column({
     type: 'varchar',
     length: 30,
@@ -71,12 +80,4 @@ export class User {
   //Список вишлистов, которые создал пользователь
   @OneToMany(() => Wishlist, (wishlist) => wishlist.owner)
   wishlists: Wishlist[];
-
-  //Дата создания
-  @CreateDateColumn()
-  createdAt: Date;
-
-  //Дата изменения
-  @UpdateDateColumn()
-  updatedAt: Date;
 }

@@ -3,98 +3,101 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { DeleteResult, Like, Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Wish } from 'src/wishes/entities/wish.entity';
+import { saltOrRounds } from 'src/utils/constants';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    @InjectRepository(Wish)
+    private readonly wishesRepository: Repository<Wish>,
   ) {}
 
   async createUser(dto: CreateUserDto): Promise<User> {
-    return this.usersRepository.save({
+    const hashPassword = await bcrypt.hash(dto.password, saltOrRounds);
+
+    const userDTO = {
       ...dto,
-      //password: ,
-    });
+      password: hashPassword,
+    };
+
+    const user = await this.usersRepository.save(userDTO);
+    return user;
   }
 
-  async findAll(): Promise<User[]> {
-    return this.usersRepository.find();
-  }
-
-  async findById(id: number): Promise<User> {
+  async findOneById(id: number): Promise<User> {
     return await this.usersRepository.findOneBy({ id });
   }
 
-  async findByUsername(username: string): Promise<User> {
+  async findOneByUsername(username: string): Promise<User> {
     return this.usersRepository.findOneBy({ username });
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findOneByEmail(email: string): Promise<User> {
     return this.usersRepository.findOneBy({ email });
   }
 
-  async findMany(query: string): Promise<User[]> {
+  async findMany(query: string): Promise<User | User[]> {
     return await this.usersRepository.find({
       where: [{ username: Like(`${query}%`) }, { email: Like(`${query}%`) }],
     });
   }
 
   async updateById(id: number, dto: UpdateUserDto): Promise<User> {
-    const user = await this.findById(id);
-
-    if (dto.email && dto.email !== user.email) {
-      const foundedUserByEmail = await this.findByEmail(dto.email);
-      if (foundedUserByEmail) {
-        throw new BadRequestException('Email уже занят другим пользователем!');
-      }
-    }
+    const user = await this.findOneById(id);
 
     if (dto.username && dto.username !== user.username) {
-      const foundedUserByUsername = await this.findByUsername(dto.username);
-      if (foundedUserByUsername) {
-        throw new BadRequestException('Имя уже занято другим пользователем!');
-      }
+      const match = await this.findOneByUsername(dto.username);
+      if (match)
+        throw new BadRequestException('Такой пользователь уже сущевствует!');
+    }
+
+    if (dto.email && dto.email !== user.email) {
+      const match = await this.findOneByEmail(dto.email);
+      if (match)
+        throw new BadRequestException('Такой пользователь уже сущевствует!');
     }
 
     if (dto.password) {
-      //dto.password = await this.hashService.createHash(dto.password);
+      dto.password = await bcrypt.hash(dto.password, saltOrRounds);
     }
 
-    await this.usersRepository.update(id, dto);
+    const updatedUserData: User = {
+      ...user,
+      username: dto?.username,
+      email: dto?.email,
+      password: dto?.password,
+      about: dto?.about,
+      avatar: dto?.avatar,
+    };
 
-    return await this.findById(id);
+    await this.usersRepository.update(id, updatedUserData);
+
+    return await this.findOneById(id);
   }
 
   async getUserWishes(username: string): Promise<Wish[]> {
-    const user = await this.findByUsername(username);
-
-    if (!user) {
-      throw new NotFoundException('Пользователя с таким именем нет');
-    }
-
-    const { id } = user;
-    const { wishes } = await this.usersRepository.findOne({
-      where: { id },
-      select: ['wishes'],
-      relations: ['wishes', 'wishes.owner', 'wishes.offers'],
+    const user = await this.usersRepository.findOne({
+      where: {
+        username,
+      },
+      relations: {
+        wishes: true,
+      },
     });
-
-    for (const wish of wishes) {
-      delete wish.owner.password;
-      delete wish.owner.email;
+    if (!user) {
+      throw new NotFoundException(
+        `Пользователь с именем ${username} не найден`,
+      );
     }
-
-    return wishes;
-  }
-
-  async deleteById(id: number): Promise<DeleteResult> {
-    return this.usersRepository.delete(id);
+    return user.wishes;
   }
 }

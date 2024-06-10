@@ -19,22 +19,12 @@ import { Wish } from 'src/wishes/entities/wish.entity';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-  @Get()
-  async findAll(): Promise<User[]> {
-    const users = await this.usersService.findAll();
-    const preparedUsers = users.map((user) => {
-      delete user.password;
-      return user;
-    });
-    return preparedUsers;
-  }
 
   @Get('me')
   async getAuthUser(@Req() { user }: { user: User }): Promise<User> {
-    const userData = await this.usersService.findById(user.id);
-    if (!userData) {
-      throw new NotFoundException('Пользователь не существует!');
-    }
+    const userData = await this.usersService.findOneById(user.id);
+
+    if (!userData) throw new NotFoundException('Пользователь не существует!');
 
     delete userData.password;
 
@@ -46,11 +36,11 @@ export class UsersController {
     @Req() { user }: { user: User },
     @Body() dto: UpdateUserDto,
   ): Promise<User> {
-    const updatedUser = await this.usersService.updateById(user.id, dto);
+    const updUserData = await this.usersService.updateById(user.id, dto);
 
-    delete updatedUser.password;
+    delete updUserData.password;
 
-    return updatedUser;
+    return updUserData;
   }
 
   @Get('me/wishes')
@@ -60,11 +50,9 @@ export class UsersController {
 
   @Get(':username')
   async getUserByUsername(@Param('username') username: string): Promise<User> {
-    const user = await this.usersService.findByUsername(username);
+    const user = await this.usersService.findOneByUsername(username);
 
-    if (!user) {
-      throw new NotFoundException('Пользователь с таким именем не существует');
-    }
+    if (!user) throw new NotFoundException('Пользователь не существует');
 
     delete user.password;
     delete user.email;
@@ -78,14 +66,18 @@ export class UsersController {
   }
 
   @Post('find')
-  async findUsers(@Body('query') query: string): Promise<User[]> {
+  async findUsers(@Body('query') query: string): Promise<User | User[]> {
     const users = await this.usersService.findMany(query);
 
-    if (!users) {
-      throw new NotFoundException('Пользователи не найдены');
-    }
+    if (!users) throw new NotFoundException('Пользователи не найдены');
 
-    //delete user.password;
+    if (Array.isArray(users)) {
+      for (const user of users) {
+        delete user.password;
+      }
+    } else {
+      delete users.password;
+    }
 
     return users;
   }
