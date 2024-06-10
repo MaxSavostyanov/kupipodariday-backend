@@ -28,7 +28,7 @@ export class AuthController {
   async signup(@Body() createUserDto: CreateUserDto) {
     const { email } = createUserDto;
 
-    const existUser = await this.usersService.findByEmail(email);
+    const existUser = await this.usersService.findOneByEmail(email);
 
     if (existUser) {
       throw new BadRequestException();
