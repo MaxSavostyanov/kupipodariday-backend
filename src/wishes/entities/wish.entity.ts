@@ -16,6 +16,14 @@ export class Wish {
   @PrimaryGeneratedColumn()
   id: number;
 
+  //Дата создания
+  @CreateDateColumn()
+  createdAt: Date;
+
+  //Дата изменения
+  @UpdateDateColumn()
+  updatedAt: Date;
+
   //Название подарка
   @Column()
   @IsString()
@@ -34,7 +42,7 @@ export class Wish {
 
   //Стоимость подарка
   @Column({
-    type: 'decimal',
+    type: 'numeric',
     precision: 10,
     scale: 2,
   })
@@ -70,12 +78,4 @@ export class Wish {
     default: 0,
   })
   copied: number;
-
-  //Дата создания
-  @CreateDateColumn()
-  createdAt: Date;
-
-  //Дата изменения
-  @UpdateDateColumn()
-  updatedAt: Date;
 }
