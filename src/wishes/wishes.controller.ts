@@ -54,7 +54,7 @@ export class WishesController {
     @Req() { user }: { user: User },
     @Param('id') id: string,
   ): Promise<Record<string, never>> {
-    await this.wishesService.copy(Number(id), user);
+    await this.wishesService.copyById(Number(id), user);
 
     return {};
   }

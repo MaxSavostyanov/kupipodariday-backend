@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsString, Length, IsEmail, IsUrl } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  Length,
+  IsEmail,
+  IsUrl,
+  IsDate,
+} from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -15,10 +22,12 @@ import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
 export class User {
   // Уникальный числовой идентификатор
   @PrimaryGeneratedColumn()
+  @IsDate()
   id: number;
 
   // Дата создания
   @CreateDateColumn()
+  @IsDate()
   createdAt: Date;
 
   // Дата изменения

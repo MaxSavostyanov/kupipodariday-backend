@@ -1,4 +1,4 @@
-import { IsString, Length, IsUrl, IsNumber } from 'class-validator';
+import { IsString, Length, IsUrl, IsNumber, IsDate } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -18,10 +18,12 @@ export class Wish {
 
   //Дата создания
   @CreateDateColumn()
+  @IsDate()
   createdAt: Date;
 
   //Дата изменения
   @UpdateDateColumn()
+  @IsDate()
   updatedAt: Date;
 
   //Название подарка

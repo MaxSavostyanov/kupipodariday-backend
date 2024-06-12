@@ -1,4 +1,4 @@
-import { IsString, Length, IsUrl } from 'class-validator';
+import { IsString, Length, IsUrl, IsDate } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -17,6 +17,16 @@ export class Wishlist {
   @PrimaryGeneratedColumn()
   id: number;
 
+  //Дата создания
+  @CreateDateColumn()
+  @IsDate()
+  createdAt: Date;
+
+  //Дата изменения
+  @UpdateDateColumn()
+  @IsDate()
+  updatedAt: Date;
+
   //Название списка
   @Column()
   @IsString()
@@ -24,7 +34,7 @@ export class Wishlist {
   name: string;
 
   //Описание подборки
-  @Column()
+  @Column({ nullable: true })
   @IsString()
   @Length(0, 1500)
   description: string;
@@ -42,12 +52,4 @@ export class Wishlist {
   //Владелец списка
   @ManyToOne(() => User, (user) => user.wishlists)
   owner: User;
-
-  //Дата создания
-  @CreateDateColumn()
-  createdAt: Date;
-
-  //Дата изменения
-  @UpdateDateColumn()
-  updatedAt: Date;
 }
