@@ -15,6 +15,14 @@ export class Offer {
   @PrimaryGeneratedColumn()
   id: number;
 
+  //Дата создания
+  @CreateDateColumn()
+  createdAt: Date;
+
+  //Дата изменения
+  @UpdateDateColumn()
+  updatedAt: Date;
+
   //ID желающего скинуться
   @ManyToOne(() => User, (user) => user.offers)
   user: User;
@@ -37,12 +45,4 @@ export class Offer {
   })
   @IsBoolean()
   hidden: boolean;
-
-  //Дата создания
-  @CreateDateColumn()
-  createdAt: Date;
-
-  //Дата изменения
-  @UpdateDateColumn()
-  updatedAt: Date;
 }

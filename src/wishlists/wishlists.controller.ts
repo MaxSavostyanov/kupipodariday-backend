@@ -21,7 +21,7 @@ export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
   @Get(':id')
-  async getWishlistById(@Param('id') wishId: string): Promise<Wishlist> {
+  async getById(@Param('id') wishId: string): Promise<Wishlist> {
     return await this.wishlistsService.findOneById(Number(wishId));
   }
 
@@ -36,17 +36,17 @@ export class WishlistsController {
 
   @UseGuards(JwtGuard)
   @Patch(':id')
-  async update(
+  async updateById(
     @Req() { user }: { user: User },
-    @Param('id') wishId: string,
+    @Param('id') wishID: string,
     @Body() dto: UpdateWishlistDto,
   ): Promise<Wishlist> {
-    return await this.wishlistsService.updateById(Number(wishId), user.id, dto);
+    return await this.wishlistsService.updateById(Number(wishID), user.id, dto);
   }
 
   @UseGuards(JwtGuard)
   @Delete(':id')
-  async remove(
+  async removeById(
     @Req() { user }: { user: User },
     @Param('id') id: number,
   ): Promise<Wishlist> {
