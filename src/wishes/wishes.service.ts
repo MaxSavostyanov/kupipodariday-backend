@@ -90,7 +90,7 @@ export class WishesService {
   }
 
   async copyById(wishID: number, user: User) {
-    const wish = await this.wishesRepository.findOneBy({ id: wishID });
+    const wish = await this.findOneById(wishID);
 
     if (!wish) throw new NotFoundException('Такой подарок не найден!');
 
