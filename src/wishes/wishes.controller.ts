@@ -21,12 +21,6 @@ import { AMOUNT_LAST_WISHES, AMOUNT_TOP_WISHES } from 'src/utils/constants';
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
-  @UseGuards(JwtGuard)
-  @Get(':id')
-  async getWishById(@Param('id') id: string): Promise<Wish> {
-    return await this.wishesService.findOneById(Number(id));
-  }
-
   @Get('last')
   async getLastWishes(): Promise<Wish[]> {
     return await this.wishesService.getLastWishes(AMOUNT_LAST_WISHES);
@@ -35,6 +29,12 @@ export class WishesController {
   @Get('top')
   async getTopWishes(): Promise<Wish[]> {
     return await this.wishesService.getTopWishes(AMOUNT_TOP_WISHES);
+  }
+
+  @UseGuards(JwtGuard)
+  @Get(':id')
+  async getWishById(@Param('id') id: string): Promise<Wish> {
+    return await this.wishesService.findOneById(Number(id));
   }
 
   @UseGuards(JwtGuard)
