@@ -31,5 +31,7 @@ export class OffersController {
   @Post()
   async create(@Req() { user }: { user: User }, @Body() dto: CreateOfferDto) {
     await this.offersService.create(dto, user);
+
+    return {};
   }
 }

@@ -10,5 +10,5 @@ export class CreateOfferDto {
   hidden: boolean;
 
   @IsNumber()
-  itemID: number;
+  itemId: number;
 }

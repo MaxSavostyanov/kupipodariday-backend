@@ -20,7 +20,7 @@ export class OffersService {
   ) {}
 
   async create(dto: CreateOfferDto, user: User) {
-    const wish = await this.wishesService.findOneById(dto.itemID);
+    const wish = await this.wishesService.findOneById(dto.itemId);
 
     if (user.id === wish.owner.id)
       throw new BadRequestException(
