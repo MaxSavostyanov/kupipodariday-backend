@@ -20,13 +20,17 @@ export class WishlistsService {
   ) {}
 
   async create(dto: CreateWishlistDto, user: User): Promise<Wishlist> {
-    const wishes = await this.wishRepository.findBy({ id: In(dto.itemsID) });
+    const wishes = await this.wishRepository.findBy({ id: In(dto.itemsId) });
 
     return await this.wishListRepository.save({
       ...dto,
-      owner: user,
       items: wishes,
+      owner: user,
     });
+  }
+
+  findAll(): Promise<Wishlist[]> {
+    return this.wishListRepository.find();
   }
 
   async findOneById(id: number): Promise<Wishlist> {

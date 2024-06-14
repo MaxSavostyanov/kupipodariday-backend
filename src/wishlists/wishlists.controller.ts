@@ -16,9 +16,14 @@ import { Wishlist } from './entities/wishlist.entity';
 import { User } from 'src/users/entities/user.entity';
 import { JwtGuard } from 'src/auth/jwt-auth.guard';
 
-@Controller('wishlists')
+@Controller('wishlistlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
+
+  @Get()
+  findAll() {
+    return this.wishlistsService.findAll();
+  }
 
   @Get(':id')
   async getById(@Param('id') wishId: string): Promise<Wishlist> {

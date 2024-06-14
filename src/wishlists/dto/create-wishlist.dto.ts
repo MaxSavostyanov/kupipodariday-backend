@@ -19,7 +19,7 @@ export class CreateWishlistDto {
 
   @IsArray()
   @IsNumber({}, { each: true })
-  itemsID: number[];
+  itemsId: number[];
 
   @IsOptional()
   @IsString()
